@@ -13,12 +13,15 @@
 # limitations under the License.
 # ==============================================================================
 
-"""contrib module containing volatile or experimental code."""
+"""contrib module containing volatile or experimental utility code."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# Add projects here, they will show up under tf.contrib.
-from tensorflow.contrib import layers
-from tensorflow.contrib import util
+# pylint: disable=unused-import
+from tensorflow.python.framework.tensor_util import constant_value
+from tensorflow.python.framework.tensor_util import make_tensor_proto
+
+# TODO(irving): Use make_all here.
+__all__ = ['constant_value', 'make_tensor_proto']
