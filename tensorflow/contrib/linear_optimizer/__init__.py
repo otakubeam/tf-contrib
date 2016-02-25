@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Ops for training linear models.
 
-"""contrib module containing volatile or experimental code."""
+## This package provides optimizers to train linear models.
 
+To use this module import: SdcaModel from sdca_ops.
+
+
+"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-
-# Add projects here, they will show up under tf.contrib.
-from tensorflow.contrib import layers
-from tensorflow.contrib import linear_optimizer
-from tensorflow.contrib import util
