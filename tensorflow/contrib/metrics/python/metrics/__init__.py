@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Random forest implementation in tensorflow."""
+"""A module containing TensorFlow ops whose API may change in the future."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# pylint: disable=unused-import,wildcard-import
-from tensorflow.contrib.tensor_forest.python import *
+# pylint: disable=wildcard-import
+from tensorflow.contrib.metrics.python.metrics.classification import *

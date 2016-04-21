@@ -12,10 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Random forest implementation in tensorflow."""
+"""Ops for representing statistical distributions.
+
+## This package provides classes for statistical distributions.
+
+"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# pylint: disable=unused-import,wildcard-import
-from tensorflow.contrib.tensor_forest.python import *
+# pylint: disable=unused-import,wildcard-import, line-too-long
+from tensorflow.contrib.rnn.python.ops.rnn_cell import *
