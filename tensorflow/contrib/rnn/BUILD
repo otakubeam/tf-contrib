@@ -1,5 +1,5 @@
 # Description:
-#   Contains ops for evaluation metrics and summary statistics.
+#   Contains ops to train linear models on top of TensorFlow.
 #   APIs here are meant to evolve over time.
 
 licenses(["notice"])  # Apache 2.0
@@ -11,29 +11,17 @@ package(default_visibility = ["//tensorflow:__subpackages__"])
 load("//tensorflow:tensorflow.bzl", "cuda_py_tests")
 
 py_library(
-    name = "metrics_py",
-    srcs = ["__init__.py"] + glob(["python/ops/*.py"]) + glob(["python/metrics/*.py"]),
+    name = "rnn_py",
+    srcs = ["__init__.py"] + glob(["python/ops/*.py"]),
     srcs_version = "PY2AND3",
 )
 
 cuda_py_tests(
-    name = "histogram_ops_test",
-    size = "medium",
-    srcs = ["python/kernel_tests/histogram_ops_test.py"],
+    name = "rnn_cell_test",
+    size = "small",
+    srcs = ["python/kernel_tests/rnn_cell_test.py"],
     additional_deps = [
-        ":metrics_py",
-        "//tensorflow/python:framework_test_lib",
-        "//tensorflow/python:platform_test",
-    ],
-)
-
-py_test(
-    name = "classification_test",
-    srcs = ["python/metrics/classification_test.py"],
-    srcs_version = "PY2AND3",
-    deps = [
-        ":metrics_py",
-        "//tensorflow:tensorflow_py",
+        ":rnn_py",
         "//tensorflow/python:framework_test_lib",
         "//tensorflow/python:platform_test",
     ],
