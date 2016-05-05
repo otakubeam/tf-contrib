@@ -12,14 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Quantized Array Operations."""
+"""Python definitions for ops related to FFmpeg."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# pylint: disable=unused-import,wildcard-import
-from tensorflow.contrib.quantization.ops import gen_array_ops as quantized_gen_array_ops
-from tensorflow.contrib.quantization.ops.gen_array_ops import dequantize
-from tensorflow.contrib.quantization.ops.gen_array_ops import quantize_v2
-from tensorflow.contrib.quantization.ops.gen_array_ops import quantized_concat
+from tensorflow.contrib.ffmpeg.ffmpeg_ops import decode_audio
