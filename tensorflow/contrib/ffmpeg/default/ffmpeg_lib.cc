@@ -13,15 +13,13 @@
 // limitations under the License.
 // =============================================================================
 
-#include "tensorflow/contrib/ffmpeg/kernels/ffmpeg_lib.h"
+#include "tensorflow/contrib/ffmpeg/ffmpeg_lib.h"
 
 #include <errno.h>
 #include <stdlib.h>
-#include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <tuple>
 #include <unistd.h>
 
 #include <vector>
@@ -214,9 +212,9 @@ Status ReadAudioFile(const string& filename,
   }
 }
 
-Status CreateAudioFile(const string& audio_format_id, int32 samples_per_second,
-                       int32 channel_count, const std::vector<float>& samples,
-                       string* output_data) {
+Status CreateAudioFile(const string& audio_format_id, int32 bits_per_second,
+                       int32 samples_per_second, int32 channel_count,
+                       const std::vector<float>& samples, string* output_data) {
   if (audio_format_id != "wav") {
     return Status(error::Code::INVALID_ARGUMENT,
                   "CreateAudioFile only supports the 'wav' audio format.");

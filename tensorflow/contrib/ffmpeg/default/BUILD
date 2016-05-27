@@ -11,9 +11,12 @@ package(default_visibility = ["//tensorflow:__subpackages__"])
 cc_library(
     name = "ffmpeg_lib",
     srcs = ["ffmpeg_lib.cc"],
-    hdrs = ["ffmpeg_lib.h"],
+    hdrs = [
+        # Header is shared between implementations.
+        "//tensorflow/contrib/ffmpeg:ffmpeg_lib.h",
+    ],
     deps = [
-        "//google/protobuf",
+        "@protobuf//:protobuf",
         "//tensorflow/core:framework_headers_lib",
     ],
 )
@@ -25,7 +28,6 @@ cc_test(
         "--should_ffmpeg_be_installed=true",
     ],
     data = [
-        ":testdata/test_sound1.mp3",
         "//tensorflow/contrib/ffmpeg:test_data",
     ],
     tags = [
@@ -45,9 +47,6 @@ cc_test(
     srcs = ["ffmpeg_lib_test.cc"],
     args = [
         "--should_ffmpeg_be_installed=false",
-    ],
-    data = [
-        ":testdata/test_sound1.mp3",
     ],
     tags = [
         "local",
