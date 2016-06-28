@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,13 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+# This is a composite scprit to build all for Android OS
 
 set -e
 
-# Make sure we're on OS X.
-if [[ $(uname) != "Darwin" ]]; then
-    echo "ERROR: This makefile build requires OS X, which the current system "\
-    "is not."
+if [[ -z "${NDK_ROOT}" ]]; then
+    echo "NDK_ROOT should be set as an environment variable" 1>&2
     exit 1
 fi
 
@@ -34,11 +33,9 @@ rm -rf tensorflow/contrib/makefile/downloads
 # Pull down the required versions of the frameworks we need.
 tensorflow/contrib/makefile/download_dependencies.sh
 
-# Compile protobuf for the target iOS device architectures.
-tensorflow/contrib/makefile/compile_ios_protobuf.sh
+# Compile protobuf for the target Android device architectures.
+CC_PREFIX="${CC_PREFIX}" NDK_ROOT="${NDK_ROOT}" \
+tensorflow/contrib/makefile/compile_android_protobuf.sh -c
 
-# Build the iOS TensorFlow libraries.
-tensorflow/contrib/makefile/compile_ios_tensorflow.sh
-
-# Creates a static universal library in 
-# tensorflow/contrib/makefile/gen/lib/libtensorflow-core.a
+make -f tensorflow/contrib/makefile/Makefile \
+TARGET=ANDROID NDK_ROOT="${NDK_ROOT}" CC_PREFIX="${CC_PREFIX}"
