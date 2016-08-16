@@ -12,14 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Ops for representing Bayesian computation.
+"""Training and input utilities.
 
-## This package provides classes for Bayesian computation with TensorFlow.
+## Splitting sequence inputs into minibatches with state saving
+
+Use [`SequenceQueueingStateSaver`](#SequenceQueueingStateSaver) or
+its wrapper [`batch_sequences_with_states`](#batch_sequences_with_states) if
+you have input data with a dynamic primary time / frame count axis which
+you'd like to convert into fixed size segments during minibatching, and would
+like to store state in the forward direction across segments of an example.
+
+@@batch_sequences_with_states
+@@NextQueuedSequenceBatch
+@@SequenceQueueingStateSaver
 """
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# pylint: disable=unused-import,wildcard-import,line-too-long
-from tensorflow.contrib.bayesflow.python.ops import stochastic_gradient_estimators
-from tensorflow.contrib.bayesflow.python.ops import stochastic_graph
+# pylint: disable=unused-import,wildcard-import
+from tensorflow.contrib.training.python.training.sequence_queueing_state_saver import *
+from tensorflow.python.util.all_util import make_all
+
+__all__ = make_all(__name__)
