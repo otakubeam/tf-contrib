@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,17 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""This file is deprecated. Use tensorflow.python.training.session_run_hook."""
+"""Init file, giving convenient access to all ndlstm ops."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.python.training import session_run_hook
-
-# pylint: disable=invalid-name
-SessionRunHook = session_run_hook.SessionRunHook
-SessionRunArgs = session_run_hook.SessionRunArgs
-SessionRunContext = session_run_hook.SessionRunContext
-SessionRunValues = session_run_hook.SessionRunValues
-# pylint: enable=invalid-name
+# pylint: disable=wildcard-import,g-importing-member
+from tensorflow.contrib.ndlstm.python.lstm1d import *
+from tensorflow.contrib.ndlstm.python.lstm2d import *
+from tensorflow.contrib.ndlstm.python.misc import *
