@@ -1,4 +1,4 @@
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,17 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""A module containing TensorFlow ops whose API may change in the future."""
-
+"""Enum for model prediction keys."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# pylint: disable=wildcard-import
-from tensorflow.contrib.framework.python.framework.checkpoint_utils import *
-from tensorflow.contrib.framework.python.framework.experimental import experimental
-from tensorflow.contrib.framework.python.framework.tensor_util import *
-from tensorflow.python.util import decorator_utils
-from tensorflow.python.util.deprecation import deprecated
-from tensorflow.python.util.deprecation import deprecated_arg_values
-from tensorflow.python.util.deprecation import deprecated_args
+
+class PredictionKey(object):
+  CLASSES = "classes"
+  PROBABILITIES = "probabilities"
+  LOGITS = "logits"
+  LOGISTIC = "logistic"
+  SCORES = "scores"
