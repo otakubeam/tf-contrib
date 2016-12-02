@@ -12,25 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
-"""Tests for contrib.seq2seq.python.seq2seq.layers_ops."""
-# pylint: disable=unused-import,g-bad-import-order
+"""Deprecated endpoints that we aren't yet ready to remove entirely.
+"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-# pylint: enable=unused-import
 
-import tensorflow as tf
-
-
-class LayersTest(tf.test.TestCase):
-
-  def testRNNDecoder(self):
-    pass
-
-  def testRNNDecoderAttention(self):
-    pass
-
-
-if __name__ == '__main__':
-  tf.test.main()
+# pylint: disable=unused-import,line-too-long
+from tensorflow.contrib.deprecated.summaries import audio_summary
+from tensorflow.contrib.deprecated.summaries import histogram_summary
+from tensorflow.contrib.deprecated.summaries import image_summary
+from tensorflow.contrib.deprecated.summaries import merge_all_summaries
+from tensorflow.contrib.deprecated.summaries import merge_summary
+from tensorflow.contrib.deprecated.summaries import scalar_summary
+# pylint: enable=unused-import,line-too-long

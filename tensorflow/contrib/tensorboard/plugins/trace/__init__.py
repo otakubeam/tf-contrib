@@ -12,24 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
-"""Seq2seq layer operations for use in neural networks.
-"""
+"""Public API for the Trace plugin."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.python.ops import array_ops
-
-
-__all__ = ["rnn_decoder",
-           "rnn_decoder_attention"]
-
-
-def rnn_decoder(*args, **kwargs):
-  pass
-
-
-def rnn_decoder_attention(*args, **kwargs):
-  pass
+# pylint: disable=wildcard-import
+from tensorflow.contrib.tensorboard.plugins.trace.trace import *
+from tensorflow.contrib.tensorboard.plugins.trace.trace_info_pb2 import *
+# pylint: enable=wildcard-import
