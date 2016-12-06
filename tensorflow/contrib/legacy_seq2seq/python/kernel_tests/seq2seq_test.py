@@ -608,7 +608,7 @@ class Seq2SeqTest(tf.test.TestCase):
               num_decoder_symbols=classes, embedding_size=24,
               output_projection=(w, b))
         targets = [dec_inp[i+1] for i in range(len(dec_inp) - 1)] + [0]
-        def SampledLoss(inputs, labels):
+        def SampledLoss(labels, inputs):
           labels = tf.reshape(labels, [-1, 1])
           return tf.nn.sampled_softmax_loss(w_t, b, inputs, labels, 8, classes)
         return tf.contrib.legacy_seq2seq.model_with_buckets(
