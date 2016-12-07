@@ -1,5 +1,5 @@
 # Description:
-#   Contains kernels for evaluation metrics and summary statistics.
+#   Contains kernels for the input pipeline.
 
 licenses(["notice"])  # Apache 2.0
 
@@ -8,9 +8,8 @@ exports_files(["LICENSE"])
 package(default_visibility = ["//tensorflow:__subpackages__"])
 
 cc_library(
-    name = "set_kernels",
-    srcs = ["set_kernels.cc"],
-    copts = ["-Wno-sign-compare"],
+    name = "input_pipeline_kernels",
+    srcs = ["input_pipeline_kernels.cc"],
     deps = [
         "//tensorflow/core:framework_headers_lib",
         "//third_party/eigen3",

@@ -12,20 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Deprecated endpoints that we aren't yet ready to remove entirely.
-"""
+"""A module for controlling the Tensorflow/XLA JIT compiler."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-# When the endpoints are removed from core TensorFlow, the old implementations
-# will move to this file.
-# pylint: disable=unused-import,line-too-long
-from tensorflow.python.ops.logging_ops import audio_summary
-from tensorflow.python.ops.logging_ops import histogram_summary
-from tensorflow.python.ops.logging_ops import image_summary
-from tensorflow.python.ops.logging_ops import merge_all_summaries
-from tensorflow.python.ops.logging_ops import merge_summary
-from tensorflow.python.ops.logging_ops import scalar_summary
-# pylint: enable=unused-import,line-too-long
+from tensorflow.contrib.compiler import jit
