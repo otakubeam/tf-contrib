@@ -18,7 +18,6 @@ from __future__ import division
 from __future__ import print_function
 
 from tensorflow.contrib import framework as contrib_framework
-from tensorflow.contrib.framework import deprecated_arg_values
 from tensorflow.contrib.framework.python.framework import experimental
 from tensorflow.contrib.learn.python.learn import evaluable
 from tensorflow.contrib.learn.python.learn import trainable
@@ -27,7 +26,6 @@ from tensorflow.contrib.learn.python.learn.estimators import estimator
 from tensorflow.contrib.learn.python.learn.utils import export
 
 from tensorflow.contrib.tensor_forest.client import eval_metrics
-from tensorflow.contrib.tensor_forest.data import data_ops
 from tensorflow.contrib.tensor_forest.python import tensor_forest
 
 from tensorflow.python.framework import dtypes
@@ -100,7 +98,8 @@ class TensorForestLossHook(session_run_hook.SessionRunHook):
 
 
 def get_model_fn(params, graph_builder_class, device_assigner,
-                 weights_name=None, keys_name=None):
+                 weights_name=None, keys_name=None, num_trainers=1,
+                 trainer_id=0):
   """Return a model function given a way to construct a graph builder."""
   def _model_fn(features, labels):
     """Function that returns predictions, training loss, and training op."""
@@ -110,16 +109,12 @@ def get_model_fn(params, graph_builder_class, device_assigner,
       weights = features.pop(weights_name)
     if keys_name and keys_name in features:
       keys = features.pop(keys_name)
-    processed_features, spec = data_ops.ParseDataTensorOrDict(features)
-    _assert_float32(processed_features)
-    if labels is not None:
-      labels = data_ops.ParseLabelTensorOrDict(labels)
-      _assert_float32(labels)
 
     graph_builder = graph_builder_class(params, device_assigner=device_assigner)
-    inference = {eval_metrics.INFERENCE_PROB_NAME:
-                 graph_builder.inference_graph(processed_features,
-                                               data_spec=spec)}
+    inference = {
+        eval_metrics.INFERENCE_PROB_NAME:
+            graph_builder.inference_graph(features)
+    }
     if not params.regression:
       inference[eval_metrics.INFERENCE_PRED_NAME] = math_ops.argmax(
           inference[eval_metrics.INFERENCE_PROB_NAME], 1)
@@ -131,13 +126,13 @@ def get_model_fn(params, graph_builder_class, device_assigner,
     training_loss = None
     training_graph = None
     if labels is not None:
-      training_loss = graph_builder.training_loss(processed_features, labels,
-                                                  data_spec=spec,
-                                                  name=LOSS_NAME)
+      training_loss = graph_builder.training_loss(
+          features, labels, name=LOSS_NAME)
       training_graph = control_flow_ops.group(
           graph_builder.training_graph(
-              processed_features, labels, data_spec=spec,
-              input_weights=weights),
+              features, labels, input_weights=weights,
+              num_trainers=num_trainers,
+              trainer_id=trainer_id),
           state_ops.assign_add(contrib_framework.get_global_step(), 1))
     # Put weights back in
     if weights is not None:
@@ -177,7 +172,8 @@ class TensorForestEstimator(evaluable.Evaluable, trainable.Trainable):
   def __init__(self, params, device_assigner=None, model_dir=None,
                graph_builder_class=tensor_forest.RandomForestGraphs,
                config=None, weights_name=None, keys_name=None,
-               feature_engineering_fn=None, early_stopping_rounds=100):
+               feature_engineering_fn=None, early_stopping_rounds=100,
+               num_trainers=1, trainer_id=0):
 
     """Initializes a TensorForestEstimator instance.
 
@@ -204,6 +200,9 @@ class TensorForestEstimator(evaluable.Evaluable, trainable.Trainable):
         labels which will be fed into the model.
       early_stopping_rounds: Allows training to terminate early if the forest is
         no longer growing. 100 by default.
+      num_trainers: Number of training jobs, which will partition trees
+        among them.
+      trainer_id: Which trainer this instance is.
 
     Returns:
       A `TensorForestEstimator` instance.
@@ -214,7 +213,8 @@ class TensorForestEstimator(evaluable.Evaluable, trainable.Trainable):
     self.weights_name = weights_name
     self._estimator = estimator.Estimator(
         model_fn=get_model_fn(params, graph_builder_class, device_assigner,
-                              weights_name=weights_name, keys_name=keys_name),
+                              weights_name=weights_name, keys_name=keys_name,
+                              num_trainers=num_trainers, trainer_id=trainer_id),
         model_dir=model_dir,
         config=config,
         feature_engineering_fn=feature_engineering_fn)
