@@ -1,4 +1,4 @@
-# Copyright 2017 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,25 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Ops for memory statistics."""
+"""SavedModel contrib support.
+
+SavedModel provides a language-neutral format to save machine-learned models
+that is recoverable and hermetic. It enables higher-level systems and tools to
+produce, consume and transform TensorFlow models.
+"""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.contrib.memory_stats.ops import gen_memory_stats_ops
-from tensorflow.contrib.util import loader
-from tensorflow.python.platform import resource_loader
+# pylint: disable=unused-import,wildcard-import,line-too-long
+from tensorflow.contrib.saved_model.python.saved_model.signature_def_utils import *
+# pylint: enable=unused-import,widcard-import,line-too-long
 
-_memory_stats_ops_so = loader.load_op_library(
-    resource_loader.get_path_to_datafile("_memory_stats_ops.so"))
+from tensorflow.python.util.all_util import remove_undocumented
 
+_allowed_symbols = ["get_signature_def_by_key"]
 
-def BytesLimit():
-  """Generates an op that measures the total memory (in bytes) of a device."""
-  return gen_memory_stats_ops.bytes_limit()
-
-
-def MaxBytesInUse():
-  """Generates an op that computes the peak memory of a device."""
-  return gen_memory_stats_ops.max_bytes_in_use()
+remove_undocumented(__name__, _allowed_symbols)
