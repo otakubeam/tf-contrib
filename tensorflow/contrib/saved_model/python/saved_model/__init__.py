@@ -1,4 +1,4 @@
-# Copyright 2017 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Ops for memory statistics.
+"""SavedModel contrib support.
 
-@@BytesLimit
-@@MaxBytesInUse
+SavedModel provides a language-neutral format to save machine-learned models
+that is recoverable and hermetic. It enables higher-level systems and tools to
+produce, consume and transform TensorFlow models.
 """
 
-from tensorflow.contrib.memory_stats.python.ops.memory_stats_ops import BytesLimit
-from tensorflow.contrib.memory_stats.python.ops.memory_stats_ops import MaxBytesInUse
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-from tensorflow.python.util.all_util import remove_undocumented
-remove_undocumented(__name__)
+# pylint: disable=wildcard-import
+from tensorflow.contrib.saved_model.python.saved_model import signature_def_utils
+# pylint: enable=wildcard-import
