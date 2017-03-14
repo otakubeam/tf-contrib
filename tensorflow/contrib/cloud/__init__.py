@@ -1,4 +1,4 @@
-# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2017 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,29 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Module for cloud ops."""
 
-"""Constants regarding Estimators.
-
-This file is obsoleted in the move of Estimator to core.
-"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+# pylint: disable=line-too-long,wildcard-import
+from tensorflow.contrib.cloud.python.ops.bigquery_reader_ops import *
+# pylint: enable=line-too-long,wildcard-import
 
-class ProblemType(object):
-  """Enum-like values for the type of problem that the model solves.
+from tensorflow.python.util.all_util import remove_undocumented
 
-  These values are used when exporting the model to produce the appropriate
-  signature function for serving.
-
-  The following values are supported:
-    UNSPECIFIED: Produces a predict signature_fn.
-    CLASSIFICATION: Produces a classify signature_fn.
-    LINEAR_REGRESSION: Produces a regression signature_fn.
-    LOGISTIC_REGRESSION: Produces a classify signature_fn.
-  """
-  UNSPECIFIED = 0
-  CLASSIFICATION = 1
-  LINEAR_REGRESSION = 2
-  LOGISTIC_REGRESSION = 3
+_allowed_symbols = ['BigQueryReader']
+remove_undocumented(__name__, _allowed_symbols)
