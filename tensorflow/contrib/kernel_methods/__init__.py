@@ -1,4 +1,4 @@
-# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2017 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,33 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Ops for fused Cudnn RNN models.
+"""Ops for evaluation metrics and summary statistics.
 
-@@CudnnGRU
-@@CudnnLSTM
-@@CudnnRNNRelu
-@@CudnnRNNTanh
-@@RNNParamsSaveable
+@@KernelLinearClassifier
+@@RandomFourierFeatureMapper
 """
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.contrib.cudnn_rnn.python.ops.cudnn_rnn_ops import CudnnGRU
-from tensorflow.contrib.cudnn_rnn.python.ops.cudnn_rnn_ops import CudnnLSTM
-from tensorflow.contrib.cudnn_rnn.python.ops.cudnn_rnn_ops import CudnnRNNRelu
-from tensorflow.contrib.cudnn_rnn.python.ops.cudnn_rnn_ops import CudnnRNNTanh
-from tensorflow.contrib.cudnn_rnn.python.ops.cudnn_rnn_ops import RNNParamsSaveable
+from tensorflow.contrib.kernel_methods.python.kernel_estimators import KernelLinearClassifier
+from tensorflow.contrib.kernel_methods.python.mappers import dense_kernel_mapper
+from tensorflow.contrib.kernel_methods.python.mappers.random_fourier_features import RandomFourierFeatureMapper
 
 from tensorflow.python.util.all_util import remove_undocumented
-
-_allowed_symbols = [
-    "CudnnGRU",
-    "CudnnLSTM",
-    "CudnnRNNRelu",
-    "CudnnRNNTanh",
-    "RNNParamsSaveable",
-]
-
 remove_undocumented(__name__)
