@@ -12,17 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Ops and estimators that enable explicit kernel methods in TensorFlow.
-
-@@KernelLinearClassifier
-@@RandomFourierFeatureMapper
-"""
+"""Beam Search helper ops."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.contrib.kernel_methods.python.kernel_estimators import KernelLinearClassifier
-from tensorflow.contrib.kernel_methods.python.mappers.random_fourier_features import RandomFourierFeatureMapper
+from tensorflow.contrib.seq2seq.ops import gen_beam_search_ops
+from tensorflow.contrib.util import loader
+from tensorflow.python.platform import resource_loader
 
-from tensorflow.python.util.all_util import remove_undocumented
-remove_undocumented(__name__)
+_beam_search_ops_so = loader.load_op_library(
+    resource_loader.get_path_to_datafile("_beam_search_ops.so"))
+
+gather_tree = gen_beam_search_ops.gather_tree
