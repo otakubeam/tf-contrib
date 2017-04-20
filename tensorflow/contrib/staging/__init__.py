@@ -12,17 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Ops and estimators that enable explicit kernel methods in TensorFlow.
-
-@@KernelLinearClassifier
-@@RandomFourierFeatureMapper
-"""
+"""contrib module containing StagingArea."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.contrib.kernel_methods.python.kernel_estimators import KernelLinearClassifier
-from tensorflow.contrib.kernel_methods.python.mappers.random_fourier_features import RandomFourierFeatureMapper
-
-from tensorflow.python.util.all_util import remove_undocumented
-remove_undocumented(__name__)
+from tensorflow.python.ops.data_flow_ops import StagingArea
