@@ -12,26 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Tests for MultivariateNormal."""
+"""Tests for VectorLaplaceLinearOperator."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-from scipy import stats
 from tensorflow.contrib import distributions
 from tensorflow.contrib.distributions.python.ops import bijectors
 from tensorflow.python.framework import dtypes
 from tensorflow.python.ops import array_ops
-from tensorflow.python.ops import nn_ops
 from tensorflow.python.platform import test
 
 
 ds = distributions
 
 
-class MultivariateNormalDiagTest(test.TestCase):
+class VectorLaplaceDiagTest(test.TestCase):
   """Well tested because this is a simple override of the base class."""
 
   def setUp(self):
@@ -42,13 +40,13 @@ class MultivariateNormalDiagTest(test.TestCase):
     diag = -5.
     with self.test_session():
       with self.assertRaisesRegexp(ValueError, "at least 1 dimension"):
-        ds.MultivariateNormalDiag(mu, diag)
+        ds.VectorLaplaceDiag(mu, diag)
 
   def testVectorParams(self):
     mu = [-1.]
     diag = [-5.]
     with self.test_session():
-      dist = ds.MultivariateNormalDiag(mu, diag, validate_args=True)
+      dist = ds.VectorLaplaceDiag(mu, diag, validate_args=True)
       self.assertAllEqual([3, 1], dist.sample(3).get_shape())
 
   def testDistWithBatchShapeOneThenTransformedThroughSoftplus(self):
@@ -59,7 +57,7 @@ class MultivariateNormalDiagTest(test.TestCase):
     mu = array_ops.zeros((1, 3))
     diag = array_ops.ones((1, 3))
     with self.test_session():
-      base_dist = ds.MultivariateNormalDiag(mu, diag, validate_args=True)
+      base_dist = ds.VectorLaplaceDiag(mu, diag, validate_args=True)
       dist = ds.TransformedDistribution(
           base_dist,
           validate_args=True,
@@ -71,32 +69,23 @@ class MultivariateNormalDiagTest(test.TestCase):
     mu = [-1., 1]
     diag = [1., -5]
     with self.test_session():
-      dist = ds.MultivariateNormalDiag(mu, diag, validate_args=True)
+      dist = ds.VectorLaplaceDiag(mu, diag, validate_args=True)
       self.assertAllEqual(mu, dist.mean().eval())
 
   def testMeanWithBroadcastLoc(self):
     mu = [-1.]
     diag = [1., -5]
     with self.test_session():
-      dist = ds.MultivariateNormalDiag(mu, diag, validate_args=True)
+      dist = ds.VectorLaplaceDiag(mu, diag, validate_args=True)
       self.assertAllEqual([-1., -1.], dist.mean().eval())
-
-  def testEntropy(self):
-    mu = [-1., 1]
-    diag = [-1., 5]
-    diag_mat = np.diag(diag)
-    scipy_mvn = stats.multivariate_normal(mean=mu, cov=diag_mat**2)
-    with self.test_session():
-      dist = ds.MultivariateNormalDiag(mu, diag, validate_args=True)
-      self.assertAllClose(scipy_mvn.entropy(), dist.entropy().eval(), atol=1e-4)
 
   def testSample(self):
     mu = [-1., 1]
     diag = [1., -2]
     with self.test_session():
-      dist = ds.MultivariateNormalDiag(mu, diag, validate_args=True)
-      samps = dist.sample(int(1e3), seed=0).eval()
-      cov_mat = array_ops.matrix_diag(diag).eval()**2
+      dist = ds.VectorLaplaceDiag(mu, diag, validate_args=True)
+      samps = dist.sample(int(1e4), seed=0).eval()
+      cov_mat = 2. * array_ops.matrix_diag(diag).eval()**2
 
       self.assertAllClose(mu, samps.mean(axis=0),
                           atol=0., rtol=0.05)
@@ -107,7 +96,7 @@ class MultivariateNormalDiagTest(test.TestCase):
     mu = [-1., 1]
     diag = [1., 0]
     with self.test_session():
-      dist = ds.MultivariateNormalDiag(mu, diag, validate_args=True)
+      dist = ds.VectorLaplaceDiag(mu, diag, validate_args=True)
       with self.assertRaisesOpError("Singular"):
         dist.sample().eval()
 
@@ -119,15 +108,15 @@ class MultivariateNormalDiagTest(test.TestCase):
     diag = np.ones([3])
 
     with self.test_session():
-      dist = ds.MultivariateNormalDiag(mu, diag, validate_args=True)
+      dist = ds.VectorLaplaceDiag(mu, diag, validate_args=True)
 
       mean = dist.mean()
       self.assertAllEqual([2, 3], mean.get_shape())
       self.assertAllClose(mu, mean.eval())
 
-      n = int(1e3)
+      n = int(1e4)
       samps = dist.sample(n, seed=0).eval()
-      cov_mat = array_ops.matrix_diag(diag).eval()**2
+      cov_mat = 2. * array_ops.matrix_diag(diag).eval()**2
       sample_cov = np.matmul(samps.transpose([1, 2, 0]),
                              samps.transpose([1, 0, 2])) / n
 
@@ -138,100 +127,88 @@ class MultivariateNormalDiagTest(test.TestCase):
 
   def testCovariance(self):
     with self.test_session():
-      mvn = ds.MultivariateNormalDiag(
+      vla = ds.VectorLaplaceDiag(
           loc=array_ops.zeros([2, 3], dtype=dtypes.float32))
       self.assertAllClose(
-          np.diag(np.ones([3], dtype=np.float32)),
-          mvn.covariance().eval())
+          2. * np.diag(np.ones([3], dtype=np.float32)),
+          vla.covariance().eval())
 
-      mvn = ds.MultivariateNormalDiag(
+      vla = ds.VectorLaplaceDiag(
           loc=array_ops.zeros([3], dtype=dtypes.float32),
           scale_identity_multiplier=[3., 2.])
-      self.assertAllEqual([2], mvn.batch_shape)
-      self.assertAllEqual([3], mvn.event_shape)
+      self.assertAllEqual([2], vla.batch_shape)
+      self.assertAllEqual([3], vla.event_shape)
       self.assertAllClose(
-          np.array([[[3., 0, 0],
-                     [0, 3, 0],
-                     [0, 0, 3]],
-                    [[2, 0, 0],
-                     [0, 2, 0],
-                     [0, 0, 2]]])**2.,
-          mvn.covariance().eval())
+          2. * np.array([[[3., 0, 0],
+                          [0, 3, 0],
+                          [0, 0, 3]],
+                         [[2, 0, 0],
+                          [0, 2, 0],
+                          [0, 0, 2]]])**2.,
+          vla.covariance().eval())
 
-      mvn = ds.MultivariateNormalDiag(
+      vla = ds.VectorLaplaceDiag(
           loc=array_ops.zeros([3], dtype=dtypes.float32),
           scale_diag=[[3., 2, 1], [4, 5, 6]])
-      self.assertAllEqual([2], mvn.batch_shape)
-      self.assertAllEqual([3], mvn.event_shape)
+      self.assertAllEqual([2], vla.batch_shape)
+      self.assertAllEqual([3], vla.event_shape)
       self.assertAllClose(
-          np.array([[[3., 0, 0],
-                     [0, 2, 0],
-                     [0, 0, 1]],
-                    [[4, 0, 0],
-                     [0, 5, 0],
-                     [0, 0, 6]]])**2.,
-          mvn.covariance().eval())
+          2. * np.array([[[3., 0, 0],
+                          [0, 2, 0],
+                          [0, 0, 1]],
+                         [[4, 0, 0],
+                          [0, 5, 0],
+                          [0, 0, 6]]])**2.,
+          vla.covariance().eval())
 
   def testVariance(self):
     with self.test_session():
-      mvn = ds.MultivariateNormalDiag(
+      vla = ds.VectorLaplaceDiag(
           loc=array_ops.zeros([2, 3], dtype=dtypes.float32))
       self.assertAllClose(
-          np.ones([3], dtype=np.float32),
-          mvn.variance().eval())
+          2. * np.ones([3], dtype=np.float32),
+          vla.variance().eval())
 
-      mvn = ds.MultivariateNormalDiag(
+      vla = ds.VectorLaplaceDiag(
           loc=array_ops.zeros([3], dtype=dtypes.float32),
           scale_identity_multiplier=[3., 2.])
       self.assertAllClose(
-          np.array([[3., 3, 3],
-                    [2, 2, 2]])**2.,
-          mvn.variance().eval())
+          2. * np.array([[3., 3, 3],
+                         [2, 2, 2]])**2.,
+          vla.variance().eval())
 
-      mvn = ds.MultivariateNormalDiag(
+      vla = ds.VectorLaplaceDiag(
           loc=array_ops.zeros([3], dtype=dtypes.float32),
           scale_diag=[[3., 2, 1],
                       [4, 5, 6]])
       self.assertAllClose(
-          np.array([[3., 2, 1],
-                    [4, 5, 6]])**2.,
-          mvn.variance().eval())
+          2. * np.array([[3., 2, 1],
+                         [4, 5, 6]])**2.,
+          vla.variance().eval())
 
   def testStddev(self):
     with self.test_session():
-      mvn = ds.MultivariateNormalDiag(
+      vla = ds.VectorLaplaceDiag(
           loc=array_ops.zeros([2, 3], dtype=dtypes.float32))
       self.assertAllClose(
-          np.ones([3], dtype=np.float32),
-          mvn.stddev().eval())
+          np.sqrt(2) * np.ones([3], dtype=np.float32),
+          vla.stddev().eval())
 
-      mvn = ds.MultivariateNormalDiag(
+      vla = ds.VectorLaplaceDiag(
           loc=array_ops.zeros([3], dtype=dtypes.float32),
           scale_identity_multiplier=[3., 2.])
       self.assertAllClose(
-          np.array([[3., 3, 3],
-                    [2, 2, 2]]),
-          mvn.stddev().eval())
+          np.sqrt(2) * np.array([[3., 3, 3],
+                                 [2, 2, 2]]),
+          vla.stddev().eval())
 
-      mvn = ds.MultivariateNormalDiag(
+      vla = ds.VectorLaplaceDiag(
           loc=array_ops.zeros([3], dtype=dtypes.float32),
           scale_diag=[[3., 2, 1], [4, 5, 6]])
       self.assertAllClose(
-          np.array([[3., 2, 1],
-                    [4, 5, 6]]),
-          mvn.stddev().eval())
-
-  def testMultivariateNormalDiagWithSoftplusScale(self):
-    mu = [-1.0, 1.0]
-    diag = [-1.0, -2.0]
-    with self.test_session():
-      dist = ds.MultivariateNormalDiagWithSoftplusScale(
-          mu, diag, validate_args=True)
-      samps = dist.sample(1000, seed=0).eval()
-      cov_mat = array_ops.matrix_diag(nn_ops.softplus(diag)).eval()**2
-
-      self.assertAllClose(mu, samps.mean(axis=0), atol=0.1)
-      self.assertAllClose(cov_mat, np.cov(samps.T), atol=0.1)
+          np.sqrt(2) * np.array([[3., 2, 1],
+                                 [4, 5, 6]]),
+          vla.stddev().eval())
 
 
 if __name__ == "__main__":
