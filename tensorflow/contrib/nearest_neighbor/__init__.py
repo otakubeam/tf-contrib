@@ -1,4 +1,4 @@
-# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2017 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""Ops for (approximate) nearest neighbor look-ups.
 
-"""Tests for DataFrames."""
+## Ops for (approximate) nearest neighbor look-ups
+
+This package provides several ops for efficient (approximate) nearest
+neighbor look-ups.
+
+### LSH multiprobe ops
+
+The following ops generate multiprobe sequences for various hash families.
+
+@@hyperplane_lsh_hash
+
+"""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
+# pylint: disable=unused-import,wildcard-import, line-too-long
+from tensorflow.contrib.nearest_neighbor.python.ops.nearest_neighbor_ops import *
+# pylint: enable=unused-import,wildcard-import,line-too-long
