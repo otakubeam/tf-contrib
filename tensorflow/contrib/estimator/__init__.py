@@ -1,4 +1,4 @@
-# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2017 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Keras data preprocessing utils for sequence data."""
+"""Experimental utilities re:tf.estimator.*."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.python.keras._impl.keras.preprocessing.sequence import make_sampling_table
-from tensorflow.python.keras._impl.keras.preprocessing.sequence import pad_sequences
-from tensorflow.python.keras._impl.keras.preprocessing.sequence import skipgrams
+# pylint: disable=unused-import,line-too-long,wildcard-import
+from tensorflow.contrib.estimator.python.estimator.extenders import *
 
-del absolute_import
-del division
-del print_function
+from tensorflow.python.util.all_util import remove_undocumented
+# pylint: enable=unused-import,line-too-long,wildcard-import
+
+_allowed_symbols = ['add_metrics']
+
+remove_undocumented(__name__, allowed_exception_list=_allowed_symbols)
