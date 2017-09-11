@@ -12,32 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""A time series library in TensorFlow (TFTS).
-
-@@StructuralEnsembleRegressor
-@@ARRegressor
-
-@@ARModel
-
-@@CSVReader
-@@NumpyReader
-@@RandomWindowInputFn
-@@WholeDatasetInputFn
-@@predict_continuation_input_fn
-
-@@TrainEvalFeatures
-@@FilteringResults
-"""
+"""Miscellanous utilities for TFGAN code and examples."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from tensorflow.contrib.gan.python.features.python import conditioning_utils_impl
 # pylint: disable=wildcard-import
-from tensorflow.contrib.timeseries.python.timeseries import *
+from tensorflow.contrib.gan.python.features.python.conditioning_utils_impl import *
 # pylint: enable=wildcard-import
-
 from tensorflow.python.util.all_util import remove_undocumented
 
-remove_undocumented(module_name=__name__,
-                    allowed_exception_list=['saved_model_utils'])
+__all__ = conditioning_utils_impl.__all__
+remove_undocumented(__name__, __all__)
