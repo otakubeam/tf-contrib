@@ -12,32 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""A time series library in TensorFlow (TFTS).
-
-@@StructuralEnsembleRegressor
-@@ARRegressor
-
-@@ARModel
-
-@@CSVReader
-@@NumpyReader
-@@RandomWindowInputFn
-@@WholeDatasetInputFn
-@@predict_continuation_input_fn
-
-@@TrainEvalFeatures
-@@FilteringResults
-"""
-
+"""Tests for tfe.py."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# pylint: disable=wildcard-import
-from tensorflow.contrib.timeseries.python.timeseries import *
-# pylint: enable=wildcard-import
+from tensorflow.contrib.eager.python import tfe
+from tensorflow.python.platform import test
 
-from tensorflow.python.util.all_util import remove_undocumented
 
-remove_undocumented(module_name=__name__,
-                    allowed_exception_list=['saved_model_utils'])
+class TFETest(test.TestCase):
+
+  def testListDevices(self):
+    # Expect at least one device.
+    self.assertTrue(tfe.list_devices())
+
+  def testNumGPUs(self):
+    devices = tfe.list_devices()
+    self.assertEqual(len(devices) - 1, tfe.num_gpus())
+
+
+if __name__ == "__main__":
+  test.main()
