@@ -12,33 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Tests for tfe.py."""
+"""Model evaluation tools for TFGAN."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.contrib.eager.python import tfe
-from tensorflow.python.eager import test
+from tensorflow.contrib.gan.python.eval.python import classifier_metrics_impl
+# pylint: disable=wildcard-import
+from tensorflow.contrib.gan.python.eval.python.classifier_metrics_impl import *
+# pylint: enable=wildcard-import
+from tensorflow.python.util.all_util import remove_undocumented
 
-
-class TFETest(test.TestCase):
-
-  def testListDevices(self):
-    # Expect at least one device.
-    self.assertTrue(tfe.list_devices())
-
-  def testNumGPUs(self):
-    devices = tfe.list_devices()
-    self.assertEqual(len(devices) - 1, tfe.num_gpus())
-
-  def testCallingEnableEagerExecutionMoreThanOnce(self):
-    # Note that eager.test.main() has already invoked enable_eager_exceution().
-    with self.assertRaisesRegexp(
-        ValueError,
-        r"Do not call tfe\.%s more than once in the same process" %
-        tfe.enable_eager_execution.__name__):
-      tfe.enable_eager_execution()
-
-
-if __name__ == "__main__":
-  test.main()
+__all__ = classifier_metrics_impl.__all__
+remove_undocumented(__name__, __all__)
