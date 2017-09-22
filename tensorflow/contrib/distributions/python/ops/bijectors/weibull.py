@@ -12,30 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Experimental utilities re:tf.estimator.*."""
+"""Weibull bijector."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# pylint: disable=unused-import,line-too-long,wildcard-import
-from tensorflow.contrib.estimator.python.estimator.dnn import *
-from tensorflow.contrib.estimator.python.estimator.extenders import *
-from tensorflow.contrib.estimator.python.estimator.head import *
-from tensorflow.contrib.estimator.python.estimator.multi_head import *
-
+# go/tf-wildcard-import
+# pylint: disable=wildcard-import
+from tensorflow.contrib.distributions.python.ops.bijectors.weibull_impl import *
+# pylint: enable=wildcard-import
 from tensorflow.python.util.all_util import remove_undocumented
-# pylint: enable=unused-import,line-too-long,wildcard-import
 
-_allowed_symbols = [
-    'add_metrics',
-    'binary_classification_head',
-    'clip_gradients_by_norm',
-    'multi_class_head',
-    'multi_head',
-    'multi_label_head',
-    'regression_head',
-    'DNNEstimator',
-]
+_allowed_symbols = ["Weibull"]
 
-remove_undocumented(__name__, allowed_exception_list=_allowed_symbols)
+remove_undocumented(__name__, _allowed_symbols)
