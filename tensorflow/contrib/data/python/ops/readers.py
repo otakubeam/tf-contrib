@@ -19,6 +19,7 @@ from __future__ import print_function
 
 from tensorflow.contrib.data.python.ops.dataset_ops import Dataset
 from tensorflow.python.data.ops import dataset_ops
+from tensorflow.python.data.ops import readers
 from tensorflow.python.data.util import nest
 from tensorflow.python.framework import dtypes
 from tensorflow.python.framework import ops
@@ -40,8 +41,8 @@ class TextLineDataset(Dataset):
         to buffer. A value of 0 results in the default buffering values chosen
         based on the compression type.
     """
-    dataset = dataset_ops.TextLineDataset(filenames, compression_type,
-                                          buffer_size)
+    dataset = readers.TextLineDataset(filenames, compression_type,
+                                      buffer_size)
     super(TextLineDataset, self).__init__(dataset)
 
 
@@ -58,8 +59,8 @@ class TFRecordDataset(Dataset):
       buffer_size: (Optional.) A `tf.int64` scalar representing the number of
         bytes in the read buffer. 0 means no buffering.
     """
-    dataset = dataset_ops.TFRecordDataset(filenames, compression_type,
-                                          buffer_size)
+    dataset = readers.TFRecordDataset(filenames, compression_type,
+                                      buffer_size)
     super(TFRecordDataset, self).__init__(dataset)
 
 
@@ -85,12 +86,19 @@ class FixedLengthRecordDataset(Dataset):
       buffer_size: (Optional.) A `tf.int64` scalar representing the number of
         bytes to buffer when reading.
     """
-    dataset = dataset_ops.FixedLengthRecordDataset(
+    dataset = readers.FixedLengthRecordDataset(
         filenames, record_bytes, header_bytes, footer_bytes, buffer_size)
     super(FixedLengthRecordDataset, self).__init__(dataset)
 
 
-class SqlDataset(dataset_ops.Dataset):
+class SqlDataset(Dataset):
+
+  def __init__(self, driver_name, data_source_name, query, output_types):
+    dataset = _SqlDataset(driver_name, data_source_name, query, output_types)
+    super(SqlDataset, self).__init__(dataset)
+
+
+class _SqlDataset(dataset_ops.Dataset):
   """A `Dataset` consisting of the results from a SQL query."""
 
   def __init__(self, driver_name, data_source_name, query, output_types):
@@ -122,7 +130,7 @@ class SqlDataset(dataset_ops.Dataset):
       output_types: A tuple of `tf.DType` objects representing the types of the
         columns returned by `query`.
     """
-    super(SqlDataset, self).__init__()
+    super(_SqlDataset, self).__init__()
     self._driver_name = ops.convert_to_tensor(
         driver_name, dtype=dtypes.string, name="driver_name")
     self._data_source_name = ops.convert_to_tensor(
