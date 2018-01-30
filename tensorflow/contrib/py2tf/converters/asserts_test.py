@@ -12,29 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Converting code to AST.
-
-Adapted from Tangent.
-"""
+"""Tests for asserts module."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import textwrap
-
 import gast
 
-from tensorflow.python.util import tf_inspect
+from tensorflow.contrib.py2tf.converters import asserts
+from tensorflow.contrib.py2tf.converters import converter_test_base
+from tensorflow.python.platform import test
 
 
-def parse_entity(entity):
-  """Return the AST of given entity."""
-  source = tf_inspect.getsource(entity)
-  source = textwrap.dedent(source)
-  return parse_str(source), source
+class AssertsTest(converter_test_base.TestCase):
+
+  def test_transform(self):
+
+    def test_fn(a):
+      assert a > 0
+
+    node = self.parse_and_analyze(test_fn, {})
+    node = asserts.transform(node, self.ctx)
+
+    self.assertTrue(isinstance(node.body[0].body[0].value, gast.Call))
 
 
-def parse_str(src):
-  """Return the AST of given piece of code."""
-  return gast.parse(src)
+if __name__ == '__main__':
+  test.main()
