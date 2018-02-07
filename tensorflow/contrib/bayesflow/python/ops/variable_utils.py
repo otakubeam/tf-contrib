@@ -1,4 +1,4 @@
-# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2018 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,11 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Utility module that contains APIs usable in the generated code."""
+"""Utility functions related to managing `tf.Variable`s."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.contrib.py2tf.utils.context_managers import control_dependency_on_returns
-from tensorflow.contrib.py2tf.utils.misc import alias_tensors
+# go/tf-wildcard-import
+from tensorflow.contrib.bayesflow.python.ops.variable_utils_impl import *  # pylint: disable=wildcard-import,unused-wildcard-import,g-importing-member
+from tensorflow.python.util import all_util
+
+_allowed_symbols = [
+    "externalize_variables_as_args",
+]
+
+all_util.remove_undocumented(__name__, _allowed_symbols)
