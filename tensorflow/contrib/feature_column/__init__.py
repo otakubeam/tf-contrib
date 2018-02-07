@@ -1,4 +1,4 @@
-# Copyright 2016 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2018 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,11 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Utility module that contains APIs usable in the generated code."""
+"""Experimental utilities for tf.feature_column."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.contrib.py2tf.utils.context_managers import control_dependency_on_returns
-from tensorflow.contrib.py2tf.utils.misc import alias_tensors
+# pylint: disable=unused-import,line-too-long,wildcard-import
+from tensorflow.contrib.feature_column.python.feature_column.sequential_feature_column import *
+
+from tensorflow.python.util.all_util import remove_undocumented
+# pylint: enable=unused-import,line-too-long,wildcard-import
+
+_allowed_symbols = [
+]
+
+remove_undocumented(__name__, allowed_exception_list=_allowed_symbols)
