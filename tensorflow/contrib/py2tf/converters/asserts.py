@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Compatibility support. Converts Print nodes to function calls."""
+"""Converts Assert statements to their corresponding TF calls."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -20,32 +20,34 @@ from __future__ import print_function
 
 import gast
 
-from tensorflow.contrib.py2tf.pyct import anno
+from tensorflow.contrib.py2tf.pyct import templates
+from tensorflow.contrib.py2tf.pyct import transformer
 
 
-class PrintFunctionTransformer(gast.NodeTransformer):
+class AssertsTransformer(transformer.Base):
   """Transforms Print nodes to Call so they can be handled as functions."""
 
   # pylint:disable=invalid-name
 
-  def visit_Print(self, node):
+  def visit_Assert(self, node):
     self.generic_visit(node)
-    for n in node.values:
-      n.ctx = gast.Param()
-    call_node = gast.Call(
-        func=gast.Name('print', gast.Load(), None),
-        args=node.values,
-        keywords=[])
-    anno.setanno(call_node.func, 'live_val', print)
-    anno.setanno(call_node.func, 'fqn', 'print')
-    anno.setanno(call_node, 'args_scope', anno.getanno(node, 'args_scope'))
-    node = gast.Expr(call_node)
-    return node
+
+    # Note: The lone tf.Assert call will be wrapped with control_dependencies
+    # by side_effect_guards.
+    template = """
+      tf.Assert(test, [tf.constant(msg)])
+    """
+
+    if node.msg is None:
+      return templates.replace(
+          template, test=node.test, msg=gast.Str('Assertion error'))
+    elif isinstance(node.msg, gast.Str):
+      return templates.replace(template, test=node.test, msg=node.msg)
+    else:
+      raise NotImplementedError('Can only convert string messages for now.')
 
   # pylint:enable=invalid-name
 
 
-def transform(node):
-  transformer = PrintFunctionTransformer()
-  node = transformer.visit(node)
-  return node
+def transform(node, context):
+  return AssertsTransformer(context).visit(node)

@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.python.util import tf_inspect
+from tensorflow.contrib.py2tf.pyct import qual_names
 
 
 class Namer(object):
@@ -45,10 +45,15 @@ class Namer(object):
 
     self.generated_names = set()
 
-  def compiled_class_name(self, original_name, live_object=None):
+  def compiled_class_name(self, original_fqn, live_entity=None):
     """See call_trees.FunctionNamer.compiled_class_name."""
-    if live_object is not None and live_object in self.renamed_calls:
-      return self.renamed_calls[live_object]
+    if live_entity is not None and live_entity in self.renamed_calls:
+      return self.renamed_calls[live_entity]
+
+    if isinstance(original_fqn, tuple):
+      original_name = '__'.join(original_fqn)
+    else:
+      original_name = original_fqn
 
     new_name_root = 'Tf%s' % original_name
     new_name = new_name_root
@@ -57,49 +62,63 @@ class Namer(object):
       n += 1
       new_name = '%s_%d' % (new_name_root, n)
 
-    if live_object is not None:
-      self.renamed_calls[live_object] = new_name
+    if live_entity is not None:
+      self.renamed_calls[live_entity] = new_name
     self.generated_names.add(new_name)
+    if live_entity is not None:
+      self.renamed_calls[live_entity] = new_name
     return new_name
 
   def compiled_function_name(self,
-                             original_name,
-                             live_object=None,
+                             original_fqn,
+                             live_entity=None,
                              owner_type=None):
     """See call_trees.FunctionNamer.compiled_function_name."""
-    if live_object is not None and live_object in self.renamed_calls:
-      return self.renamed_calls[live_object]
 
     if not self.recursive:
-      new_name = original_name
-    elif owner_type is None or owner_type in self.partial_types:
-      # Top level functions: rename
-      new_name_root = 'tf__%s' % original_name
-      new_name = new_name_root
-      n = 0
-      while new_name in self.global_namespace:
-        n += 1
-        new_name = '%s_%d' % (new_name_root, n)
-    else:
-      if tf_inspect.isclass(owner_type):
-        # Class members: do not rename (the entire class will be renamed)
-        new_name = original_name
-      else:
-        raise NotImplementedError('Member function "%s" of non-class type: %s' %
-                                  (original_name, owner_type))
+      return None, False
 
-    if live_object is not None:
-      self.renamed_calls[live_object] = new_name
+    if owner_type is not None and owner_type not in self.partial_types:
+      # Members are not renamed when part of an entire converted class.
+      return None, False
+
+    if isinstance(original_fqn, tuple):
+      original_name = '__'.join(original_fqn)
+    else:
+      original_name = original_fqn
+
+    if live_entity is not None and live_entity in self.renamed_calls:
+      return self.renamed_calls[live_entity], True
+
+    new_name_root = 'tf__%s' % original_name
+    new_name = new_name_root
+    n = 0
+    while new_name in self.global_namespace:
+      n += 1
+      new_name = '%s_%d' % (new_name_root, n)
+
+    if live_entity is not None:
+      self.renamed_calls[live_entity] = new_name
     self.generated_names.add(new_name)
-    return new_name
+
+    return new_name, True
 
   def new_symbol(self, name_root, reserved_locals):
     """See control_flow.SymbolNamer.new_symbol."""
+    # reserved_locals may contain QNs.
+    all_reserved_locals = set()
+    for s in reserved_locals:
+      if isinstance(s, qual_names.QN):
+        all_reserved_locals.update(s.qn)
+      elif isinstance(s, str):
+        all_reserved_locals.add(s)
+      else:
+        raise ValueError('Unexpected symbol type "%s"' % type(s))
+
     new_name = name_root
     n = 0
-    while (new_name in self.global_namespace
-           or new_name in reserved_locals
-           or new_name in self.generated_names):
+    while (new_name in self.global_namespace or
+           new_name in all_reserved_locals or new_name in self.generated_names):
       n += 1
       new_name = '%s_%d' % (name_root, n)
 

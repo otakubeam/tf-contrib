@@ -12,34 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Tests for print_functions module."""
+"""Various context managers."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import gast
-
-from tensorflow.contrib.py2tf.converters import converter_test_base
-from tensorflow.contrib.py2tf.converters import print_functions
-from tensorflow.contrib.py2tf.pyct import compiler
-from tensorflow.python.platform import test
+import contextlib
 
 
-class PrintFunctionsTest(converter_test_base.TestCase):
+def control_dependency_on_returns(tf, return_value):
+  """Create a TF control dependency on the return values of a function.
 
-  def test_transform(self):
+  If the function had no return value, a no-op context is returned.
 
-    def test_fn(a):
-      print(a)
+  Args:
+    tf: The TensorFlow module.
+    return_value: The return value to set as control dependency.
 
-    node = self.parse_and_analyze(test_fn, {'print': print})
-    node = print_functions.transform(node)
-    result = compiler.ast_to_object(node)
-
-    result.test_fn('a')
-    self.assertTrue(isinstance(node.body[0].body[0].value, gast.Call))
-
-
-if __name__ == '__main__':
-  test.main()
+  Returns:
+    A context manager.
+  """
+  if return_value is None:
+    return contextlib.contextmanager(lambda: (yield))()
+  # TODO(mdan): Filter to tensor objects.
+  if not isinstance(return_value, (list, tuple)):
+    return_value = (return_value,)
+  return tf.control_dependencies(return_value)
