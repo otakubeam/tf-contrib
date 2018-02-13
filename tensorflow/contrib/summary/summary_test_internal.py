@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
-"""Utilities to test summaries."""
+"""Internal helpers for tests in this directory."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -25,10 +24,7 @@ import os
 import sqlite3
 
 from tensorflow.contrib.summary import summary_ops
-from tensorflow.core.util import event_pb2
 from tensorflow.python.framework import test_util
-from tensorflow.python.lib.io import tf_record
-from tensorflow.python.platform import gfile
 
 
 class SummaryDbTest(test_util.TensorFlowTestCase):
@@ -50,42 +46,6 @@ class SummaryDbTest(test_util.TensorFlowTestCase):
   def tearDown(self):
     self.db.close()
     super(SummaryDbTest, self).tearDown()
-
-
-def events_from_file(filepath):
-  """Returns all events in a single event file.
-
-  Args:
-    filepath: Path to the event file.
-
-  Returns:
-    A list of all tf.Event protos in the event file.
-  """
-  records = list(tf_record.tf_record_iterator(filepath))
-  result = []
-  for r in records:
-    event = event_pb2.Event()
-    event.ParseFromString(r)
-    result.append(event)
-  return result
-
-
-def events_from_logdir(logdir):
-  """Returns all events in the single eventfile in logdir.
-
-  Args:
-    logdir: The directory in which the single event file is sought.
-
-  Returns:
-    A list of all tf.Event protos from the single event file.
-
-  Raises:
-    AssertionError: If logdir does not contain exactly one file.
-  """
-  assert gfile.Exists(logdir)
-  files = gfile.ListDirectory(logdir)
-  assert len(files) == 1, 'Found not exactly one file in logdir: %s' % files
-  return events_from_file(os.path.join(logdir, files[0]))
 
 
 def get_one(db, q, *p):
