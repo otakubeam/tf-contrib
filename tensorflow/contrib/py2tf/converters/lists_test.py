@@ -12,35 +12,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Tests for context_managers module."""
+"""Tests for lists module."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.contrib.py2tf.utils import context_managers
-from tensorflow.python.framework import constant_op
+from tensorflow.contrib.py2tf import utils
+from tensorflow.contrib.py2tf.converters import converter_test_base
+from tensorflow.contrib.py2tf.converters import lists
 from tensorflow.python.framework import dtypes
 from tensorflow.python.ops import tensor_array_ops
 from tensorflow.python.platform import test
 
 
-class ContextManagersTest(test.TestCase):
+class ListTest(converter_test_base.TestCase):
 
-  def test_control_dependency_on_returns(self):
-    # Just dry run them.
-    with context_managers.control_dependency_on_returns(None):
-      pass
-    with context_managers.control_dependency_on_returns(
-        constant_op.constant(1)):
-      pass
-    with context_managers.control_dependency_on_returns(
-        tensor_array_ops.TensorArray(dtypes.int32, size=1)):
-      pass
-    with context_managers.control_dependency_on_returns(
-        [constant_op.constant(1),
-         constant_op.constant(2)]):
-      pass
+  def test_empty_annotated_list(self):
+
+    def test_fn():
+      l = []
+      utils.set_element_type(l, dtypes.int32)
+      l.append(1)
+      return l
+
+    node = self.parse_and_analyze(test_fn, {'dtypes': dtypes, 'utils': utils})
+    node = lists.transform(node, self.ctx)
+
+    with self.compiled(node, tensor_array_ops.TensorArray,
+                       dtypes.int32) as result:
+      # TODO(mdan): Attach these additional modules automatically.
+      result.utils = utils
+      result.dtypes = dtypes
+      with self.test_session() as sess:
+        self.assertEqual(test_fn(), sess.run(result.test_fn().stack()))
 
 
 if __name__ == '__main__':
