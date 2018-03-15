@@ -11,15 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =============================================================================
-"""Exposes the python wrapper for TensorRT graph transforms."""
-
+# ==============================================================================
+"""Python helper for loading kafka ops and kernels."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# pylint: disable=unused-import,line-too-long
-from tensorflow.contrib.tensorrt.python.ops import trt_engine_op
-from tensorflow.contrib.tensorrt.python.trt_convert import calib_graph_to_infer_graph
-from tensorflow.contrib.tensorrt.python.trt_convert import create_inference_graph
-# pylint: enable=unused-import,line-too-long
+from tensorflow.contrib.util import loader
+from tensorflow.python.platform import resource_loader
+
+_dataset_ops = loader.load_op_library(
+    resource_loader.get_path_to_datafile("../../_dataset_ops.so"))
