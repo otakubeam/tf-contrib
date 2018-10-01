@@ -25,49 +25,11 @@ from tensorflow.contrib.data.python.ops import grouping
 from tensorflow.python.data.kernel_tests import test_base
 from tensorflow.python.data.ops import dataset_ops
 from tensorflow.python.framework import dtypes
-from tensorflow.python.framework import errors
-from tensorflow.python.framework import sparse_tensor
 from tensorflow.python.ops import array_ops
 from tensorflow.python.platform import test
 
 
-class GetSingleElementTest(test_base.DatasetTestBase, parameterized.TestCase):
-
-  @parameterized.named_parameters(
-      ("Zero", 0, 1),
-      ("Five", 5, 1),
-      ("Ten", 10, 1),
-      ("Empty", 100, 1, errors.InvalidArgumentError, "Dataset was empty."),
-      ("MoreThanOne", 0, 2, errors.InvalidArgumentError,
-       "Dataset had more than one element."),
-  )
-  def testGetSingleElement(self, skip, take, error=None, error_msg=None):
-    skip_t = array_ops.placeholder(dtypes.int64, shape=[])
-    take_t = array_ops.placeholder(dtypes.int64, shape=[])
-
-    def make_sparse(x):
-      x_1d = array_ops.reshape(x, [1])
-      x_2d = array_ops.reshape(x, [1, 1])
-      return sparse_tensor.SparseTensor(x_2d, x_1d, x_1d)
-
-    dataset = dataset_ops.Dataset.range(100).skip(skip_t).map(
-        lambda x: (x * x, make_sparse(x))).take(take_t)
-    element = get_single_element.get_single_element(dataset)
-
-    with self.cached_session() as sess:
-      if error is None:
-        dense_val, sparse_val = sess.run(
-            element, feed_dict={
-                skip_t: skip,
-                take_t: take
-            })
-        self.assertEqual(skip * skip, dense_val)
-        self.assertAllEqual([[skip]], sparse_val.indices)
-        self.assertAllEqual([skip], sparse_val.values)
-        self.assertAllEqual([skip], sparse_val.dense_shape)
-      else:
-        with self.assertRaisesRegexp(error, error_msg):
-          sess.run(element, feed_dict={skip_t: skip, take_t: take})
+class ReduceDatasetTest(test_base.DatasetTestBase, parameterized.TestCase):
 
   @parameterized.named_parameters(
       ("SumZero", 0),
